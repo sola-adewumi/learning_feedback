@@ -1,0 +1,134 @@
+CREATE TABLE IF NOT EXISTS public.feedback_tb
+(
+    id integer NOT NULL,
+    student_users_id integer NOT NULL,
+    subject_id integer NOT NULL,
+    topic_id integer NOT NULL,
+    rating integer NOT NULL,
+    comments character varying,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.subject
+(
+    id integer NOT NULL,
+    subject_name character varying(60) NOT NULL,
+    topic_id integer NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.topic
+(
+    id integer NOT NULL,
+    topic_name character varying(60) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.student_user
+(
+    id integer NOT NULL,
+    "fName" character varying(50) NOT NULL,
+    "lName" character varying(50) NOT NULL,
+    username character varying(100) NOT NULL,
+    email character varying(100) NOT NULL,
+    class_year_id integer NOT NULL,
+    passwd character varying(100) NOT NULL,
+    confirm_passwd character varying(100) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.class_cat
+(
+    id integer NOT NULL,
+    class_cat_name character varying(80) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.class_year
+(
+    id integer NOT NULL,
+    class_year_name character varying(50) NOT NULL,
+    class_cat_id integer NOT NULL,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE IF EXISTS public.feedback_tb
+    ADD CONSTRAINT student_user FOREIGN KEY (student_users_id)
+    REFERENCES public.student_user (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS public.feedback_tb
+    ADD CONSTRAINT subject_id FOREIGN KEY (subject_id)
+    REFERENCES public.subject (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS public.subject
+    ADD FOREIGN KEY (id)
+    REFERENCES public.feedback_tb (subject_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS public.subject
+    ADD CONSTRAINT topic_id FOREIGN KEY (topic_id)
+    REFERENCES public.topic (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS public.topic
+    ADD FOREIGN KEY (id)
+    REFERENCES public.subject (topic_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS public.student_user
+    ADD CONSTRAINT class_year FOREIGN KEY (class_year_id)
+    REFERENCES public.class_year (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS public.class_cat
+    ADD FOREIGN KEY (id)
+    REFERENCES public.class_year (class_cat_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS public.class_year
+    ADD FOREIGN KEY (id)
+    REFERENCES public.student_user (class_year_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS public.class_year
+    ADD CONSTRAINT class_cat FOREIGN KEY (class_cat_id)
+    REFERENCES public.class_cat (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+END;
+
+#################################################
+SELECT 
+class_year.class_year_name,class_cat.class_cat_name 
+FROM class_year 
+JOIN class_cat
+ON class_year.class_cat_id = class_cat_id;
+
